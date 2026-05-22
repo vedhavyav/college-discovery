@@ -1,15 +1,19 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
 const getPrisma = () => {
-  const dbUrl = process.env.DATABASE_URL || 'file:./dev.db';
-  const adapter = new PrismaBetterSqlite3({
-    url: dbUrl,
-  });
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL is not set in environment variables');
+  }
+
+  const pool = new Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
     adapter,
@@ -17,6 +21,17 @@ const getPrisma = () => {
   });
 };
 
-export const prisma = globalForPrisma.prisma ?? getPrisma();
+let prismaInstance: PrismaClient | undefined;
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export const prisma = new Proxy({} as PrismaClient, {
+  get(target, prop, receiver) {
+    if (prop === '$$typeof') return undefined; // support React Server Components checking
+    if (!prismaInstance) {
+      prismaInstance = globalForPrisma.prisma ?? getPrisma();
+      if (process.env.NODE_ENV !== 'production') {
+        globalForPrisma.prisma = prismaInstance;
+      }
+    }
+    return Reflect.get(prismaInstance, prop, receiver);
+  }
+});
