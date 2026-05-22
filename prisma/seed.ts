@@ -56,8 +56,8 @@ const engineeringCovers = [
   'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=1200&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1607237138185-eedd996e5b09?w=1200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1492538368677-f6e0afe31dcc?w=1200&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&auto=format&fit=crop&q=80'
 ];
 
@@ -218,8 +218,8 @@ async function main() {
   await prisma.college.create({
     data: {
       name: 'Birla Institute of Technology and Science, Pilani (BITS Pilani)',
-      logoUrl: 'https://images.unsplash.com/photo-1607237138185-eedd996e5b09?w=150&auto=format&fit=crop&q=60',
-      coverUrl: 'https://images.unsplash.com/photo-1607237138185-eedd996e5b09?w=1200&auto=format&fit=crop&q=80',
+      logoUrl: 'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=150&auto=format&fit=crop&q=60',
+      coverUrl: 'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&auto=format&fit=crop&q=80',
       city: 'Pilani',
       state: 'Rajasthan',
       established: 1964,
@@ -254,15 +254,15 @@ async function main() {
       }
     }
   });
-
-  // DTU
-  await prisma.college.create({
-    data: {
-      name: 'Delhi Technological University (DTU)',
-      logoUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=150&auto=format&fit=crop&q=60',
-      coverUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&auto=format&fit=crop&q=80',
-      city: 'New Delhi',
-      state: 'Delhi',
+ 
+   // DTU
+   await prisma.college.create({
+     data: {
+       name: 'Delhi Technological University (DTU)',
+       logoUrl: 'https://images.unsplash.com/photo-1492538368677-f6e0afe31dcc?w=150&auto=format&fit=crop&q=60',
+       coverUrl: 'https://images.unsplash.com/photo-1492538368677-f6e0afe31dcc?w=1200&auto=format&fit=crop&q=80',
+       city: 'New Delhi',
+       state: 'Delhi',
       established: 1941,
       type: 'Government',
       rating: 4.4,
