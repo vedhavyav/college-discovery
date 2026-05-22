@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model College {
+  id               String      @id @default(uuid())
+  name             String
+  logoUrl          String?
+  coverUrl         String?
+  city             String
+  state            String
+  established      Int
+  type             String      // e.g. "Government", "Private"
+  rating           Float       // e.g. 4.5
+  fees             Float       // Average annual fees in INR (e.g. 150000)
+  placementMedian  Float       // In LPA (e.g. 12.5)
+  placementHighest Float       // In LPA (e.g. 45.0)
+  overview         String
+  ranking          Int?        // NIRF ranking
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  courses          Course[]
+  placements       Placement[]
+  reviews          Review[]
+  cutoffs          Cutoff[]
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  collegeId   String
+  college     College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  name        String   // e.g. "B.Tech Computer Science and Engineering"
+  duration    String   // e.g. "4 Years"
+  fees        Float    // Annual fees in INR
+  eligibility String   // e.g. "Class 12 with 75% marks"
+}
+
+model Placement {
+  id             String   @id @default(uuid())
+  collegeId      String
+  college        College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  year           Int      // e.g. 2023, 2024
+  averagePackage Float    // In LPA (e.g. 14.2)
+  highestPackage Float    // In LPA (e.g. 52.0)
+  topRecruiters  String   // Comma separated, e.g. "Google, Microsoft, Amazon"
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  userName  String
+  rating    Float    // e.g. 4.0
+  comment   String
+  createdAt DateTime @default(now())
+}
+
+model Cutoff {
+  id          String   @id @default(uuid())
+  collegeId   String
+  college     College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  exam        String   // e.g. "JEE Main", "NEET", "GATE", "CAT"
+  category    String   // e.g. "General", "OBC", "SC", "ST"
+  quota       String   // e.g. "Home State", "Other State", "All India"
+  courseName  String   // e.g. "Computer Science & Engineering"
+  closingRank Int
+}
+
+model DiscussionQuestion {
+  id        String             @id @default(uuid())
+  userName  String
+  title     String
+  content   String
+  createdAt DateTime           @default(now())
+  answers   DiscussionAnswer[]
+}
+
+model DiscussionAnswer {
+  id         String             @id @default(uuid())
+  questionId String
+  question   DiscussionQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userName   String
+  content    String
+  createdAt  DateTime           @default(now())
+}
