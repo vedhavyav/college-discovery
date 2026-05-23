@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       orderBy = { ranking: 'asc' };
     }
 
-        const [colleges, totalCount, allStates] = await prisma.$transaction([
+    const [colleges, totalCount, allStates] = await Promise.all([
       prisma.college.findMany({
         where,
         orderBy,
