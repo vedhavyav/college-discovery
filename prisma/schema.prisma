@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -24,6 +21,7 @@ model College {
   placementHighest Float       // In LPA (e.g. 45.0)
   overview         String
   ranking          Int?        // NIRF ranking
+  domain           String      // e.g. "Engineering", "Medical", "Management"
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
 
@@ -31,6 +29,7 @@ model College {
   placements       Placement[]
   reviews          Review[]
   cutoffs          Cutoff[]
+  scholarships     Scholarship[]
 }
 
 model Course {
@@ -90,4 +89,31 @@ model DiscussionAnswer {
   userName   String
   content    String
   createdAt  DateTime           @default(now())
+}
+
+model Scholarship {
+  id          String   @id @default(uuid())
+  collegeId   String
+  college     College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  name        String
+  amount      Float?
+  description String
+}
+
+model Exam {
+  id               String  @id @default(uuid())
+  name             String
+  description      String
+  registrationDate String?
+  examDate         String?
+  eligibility      String?
+  syllabus         String?
+}
+
+model Resource {
+  id          String @id @default(uuid())
+  title       String
+  category    String
+  description String
+  link        String
 }

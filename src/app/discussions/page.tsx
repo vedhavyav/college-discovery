@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageSquare, Send, User, Calendar, MessageCircle, AlertCircle, PlusCircle, X } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import AuthWall from '@/components/AuthWall';
 
 interface DiscussionQuestion {
   id: string;
@@ -16,6 +18,7 @@ interface DiscussionQuestion {
 }
 
 export default function DiscussionsPage() {
+  const { user, loading: authLoading } = useAuth();
   const [questions, setQuestions] = useState<DiscussionQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -45,6 +48,12 @@ export default function DiscussionsPage() {
   useEffect(() => {
     fetchQuestions();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      setName(user.displayName || user.email?.split('@')[0] || '');
+    }
+  }, [user]);
 
   const handleAskQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +108,31 @@ export default function DiscussionsPage() {
       year: 'numeric',
     });
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-24">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center justify-center gap-2">
+            <MessageSquare className="h-7 w-7 text-indigo-600" />
+            <span>Discussion Board</span>
+          </h1>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Ask questions, share information, and talk to peers. Sign in to view and reply.
+          </p>
+        </div>
+        <AuthWall />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

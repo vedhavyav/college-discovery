@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
         { error: 'Exam and Rank parameters are required' },
         { status: 400 }
       );
-    }
+    } 
 
     const rank = parseInt(rankStr);
     if (isNaN(rank) || rank <= 0) {

@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || '';
     const state = searchParams.get('state') || '';
     const type = searchParams.get('type') || '';
+    const domain = searchParams.get('domain') || '';
     const minRating = parseFloat(searchParams.get('minRating') || '0');
     const maxFees = parseFloat(searchParams.get('maxFees') || '0');
     const sortBy = searchParams.get('sortBy') || '';
@@ -28,6 +29,10 @@ export async function GET(request: NextRequest) {
 
     if (type) {
       where.type = type;
+    }
+
+    if (domain) {
+      where.domain = domain;
     }
 
     if (minRating > 0) {
@@ -90,3 +95,4 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+ 

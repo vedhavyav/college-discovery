@@ -18,7 +18,7 @@ export async function GET(
             createdAt: 'desc',
           },
         },
-        cutoffs: true,
+        cutoffs: true, 
       },
     });
 

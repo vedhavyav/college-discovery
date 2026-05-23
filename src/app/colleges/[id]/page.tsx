@@ -2,7 +2,7 @@
 
 import React, { use, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { MapPin, Landmark, Award, Star, DollarSign, Calendar, Heart, GitCompare, BookOpen, Send, User, MessageSquare, ChevronRight } from 'lucide-react';
+import { MapPin, Landmark, Award, Star, DollarSign, Calendar, Heart, GitCompare, BookOpen, Send, User, MessageSquare, ChevronRight, GraduationCap, CheckCircle2, ShieldCheck, Compass } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -20,14 +20,6 @@ interface Placement {
   topRecruiters: string;
 }
 
-interface Review {
-  id: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-}
-
 interface Cutoff {
   id: string;
   exam: string;
@@ -35,6 +27,13 @@ interface Cutoff {
   quota: string;
   courseName: string;
   closingRank: number;
+}
+
+interface Scholarship {
+  id: string;
+  name: string;
+  amount: number | null;
+  description: string;
 }
 
 interface College {
@@ -51,11 +50,12 @@ interface College {
   placementMedian: number;
   placementHighest: number;
   ranking: number | null;
+  domain: string;
   overview: string;
   courses: Course[];
   placements: Placement[];
-  reviews: Review[];
   cutoffs: Cutoff[];
+  scholarships: Scholarship[];
 }
 
 export default function CollegeDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -64,15 +64,10 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
 
   const [college, setCollege] = useState<College | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'courses' | 'placements' | 'reviews'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'courses' | 'admission' | 'cutoff' | 'placements' | 'scholarships'>('overview');
   
-  // Review form states
-  const [reviewName, setReviewName] = useState('');
-  const [reviewRating, setReviewRating] = useState(5);
-  const [reviewComment, setReviewComment] = useState('');
-  const [submittingReview, setSubmittingReview] = useState(false);
-  const [reviewError, setReviewError] = useState('');
-  const [reviewSuccess, setReviewSuccess] = useState(false);
+  // Similar colleges state
+  const [similarColleges, setSimilarColleges] = useState<College[]>([]);
 
   // Shortlist and Compare states
   const [isShortlisted, setIsShortlisted] = useState(false);
@@ -84,6 +79,15 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
       if (res.ok) {
         const data = await res.json();
         setCollege(data);
+        
+        // Fetch similar colleges under same domain
+        const similarRes = await fetch(`/api/colleges?domain=${data.domain}&limit=4`);
+        if (similarRes.ok) {
+          const similarData = await similarRes.json();
+          // Filter out current college
+          const filtered = (similarData.colleges as College[]).filter((c) => c.id !== data.id).slice(0, 3);
+          setSimilarColleges(filtered);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -148,7 +152,7 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
     const exists = list.includes(college.id);
     let updatedList: string[];
     if (exists) {
-      updatedList = list.filter((id) => id !== college.id);
+      updatedList = list.filter((cid) => cid !== college.id);
       setIsComparing(false);
     } else {
       if (list.length >= 3) {
@@ -160,50 +164,6 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
     }
 
     localStorage.setItem('compare_colleges', JSON.stringify(updatedList));
-  };
-
-  const handleReviewSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setReviewError('');
-    setReviewSuccess(false);
-
-    if (!reviewName.trim()) {
-      setReviewError('Please enter your name.');
-      return;
-    }
-    if (!reviewComment.trim()) {
-      setReviewError('Please write a review comment.');
-      return;
-    }
-
-    setSubmittingReview(true);
-    try {
-      const res = await fetch(`/api/colleges/${id}/reviews`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userName: reviewName,
-          rating: reviewRating,
-          comment: reviewComment,
-        }),
-      });
-
-      if (res.ok) {
-        setReviewSuccess(true);
-        setReviewName('');
-        setReviewComment('');
-        setReviewRating(5);
-        // Refresh college details to pull new review & recalculated score
-        fetchCollegeDetails();
-      } else {
-        const errorData = await res.json();
-        setReviewError(errorData.error || 'Failed to submit review.');
-      }
-    } catch (err) {
-      setReviewError('An error occurred. Please try again.');
-    } finally {
-      setSubmittingReview(false);
-    }
   };
 
   const formatCurrency = (val: number) => {
@@ -232,6 +192,17 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
       </div>
     );
   }
+
+  // Get accepted exams text dynamically based on cutoffs
+  const getAcceptedExams = () => {
+    const examsSet = new Set(college.cutoffs.map((c) => c.exam));
+    if (examsSet.size === 0) {
+      if (college.domain === 'Engineering') return 'JEE Main, BITSAT, or VITEEE';
+      if (college.domain === 'Management') return 'CAT / XAT';
+      return 'NEET';
+    }
+    return Array.from(examsSet).join(', ');
+  };
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -280,7 +251,7 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
             
             <div className="text-left">
               <span className="inline-flex rounded-full bg-indigo-500/10 px-2.5 py-0.5 text-xs font-bold text-indigo-400">
-                {college.type} Institute
+                {college.type} • {college.domain}
               </span>
               <h1 className="mt-2 text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 {college.name}
@@ -338,76 +309,103 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
-      {/* Tabs list */}
+      {/* Tab Navigation links */}
       <div className="mt-8 flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
-        {(['overview', 'courses', 'placements', 'reviews'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`whitespace-nowrap px-6 py-3.5 text-sm font-bold border-b-2 capitalize transition-all duration-200 ${
-              activeTab === tab
-                ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
-                : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'
-            }`}
-          >
-            {tab === 'placements' ? 'Placements & Cutoffs' : tab}
-          </button>
-        ))}
+        {(['overview', 'courses', 'admission', 'cutoff', 'placements', 'scholarships'] as const).map((tab) => {
+          let label: string = tab;
+          if (tab === 'courses') label = 'Courses & Fees';
+          if (tab === 'admission') label = 'Admission through';
+          if (tab === 'cutoff') label = 'Cutoff Ranks';
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`whitespace-nowrap px-5 py-3.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 ${
+                activeTab === tab
+                  ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400 font-extrabold'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'
+              }`}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Tabs Content */}
       <div className="mt-8">
+        {/* OVERVIEW TAB */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {/* Overview text */}
+            {/* Overview Left column */}
             <div className="md:col-span-2 space-y-6">
               <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
-                <h2 className="text-lg font-bold text-slate-950 dark:text-white">About the University</h2>
-                <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-350">{college.overview}</p>
+                <h2 className="text-base font-extrabold text-slate-950 dark:text-white uppercase tracking-wider">About the University</h2>
+                <p className="mt-4 text-xs md:text-sm leading-relaxed text-slate-650 dark:text-slate-350">{college.overview}</p>
               </div>
 
-              {/* Statistics Quick Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-slate-200/50 bg-white p-4 shadow-sm dark:border-slate-800/50 dark:bg-slate-950 text-center">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">NIRF Rank</span>
-                  <p className="mt-1 text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">
-                    {college.ranking ? `#${college.ranking}` : 'N/A'}
-                  </p>
+              {/* Similar Colleges Section */}
+              {similarColleges.length > 0 && (
+                <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
+                  <h2 className="text-base font-extrabold text-slate-950 dark:text-white uppercase tracking-wider mb-6">Similar Colleges</h2>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    {similarColleges.map((sim) => (
+                      <div
+                        key={sim.id}
+                        className="rounded-2xl border border-slate-250/50 bg-slate-50/20 p-4 shadow-sm dark:border-slate-800/55 dark:bg-slate-900/10 text-center flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="h-10 w-10 mx-auto rounded-lg bg-white p-1 border flex items-center justify-center dark:bg-slate-950 dark:border-slate-800 shrink-0">
+                            {sim.logoUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={sim.logoUrl} alt="Logo" className="h-full w-full object-cover rounded-md" />
+                            ) : (
+                              <Landmark className="h-5 w-5 text-slate-400" />
+                            )}
+                          </div>
+                          <h3 className="mt-3 font-bold text-xs text-slate-900 dark:text-white line-clamp-2 leading-snug">
+                            {sim.name}
+                          </h3>
+                          <p className="mt-1 text-[10px] text-slate-400 flex items-center justify-center gap-0.5">
+                            <MapPin className="h-3 w-3 shrink-0" />
+                            <span>{sim.city}, {sim.state}</span>
+                          </p>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-850">
+                          <Link
+                            href={`/colleges/${sim.id}`}
+                            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-indigo-500"
+                          >
+                            Explore
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="rounded-2xl border border-slate-200/50 bg-white p-4 shadow-sm dark:border-slate-800/50 dark:bg-slate-950 text-center">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Established</span>
-                  <p className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white">{college.established}</p>
-                </div>
-                <div className="rounded-2xl border border-slate-200/50 bg-white p-4 shadow-sm dark:border-slate-800/50 dark:bg-slate-950 text-center col-span-2 sm:col-span-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Campus Rating</span>
-                  <p className="mt-1 text-2xl font-extrabold text-amber-500 flex items-center justify-center gap-1">
-                    <Star className="h-5 w-5 fill-current" />
-                    <span>{college.rating.toFixed(1)}</span>
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* Sidebar quick info */}
+            {/* Overview Right column */}
             <div>
               <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
-                <h3 className="font-bold text-slate-950 dark:text-white">Fee Structure & Stats</h3>
+                <h3 className="font-extrabold text-slate-950 dark:text-white uppercase tracking-wider">Fee Structure & Stats</h3>
                 <div className="mt-4 space-y-4">
-                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-850">
                     <span className="text-xs font-semibold text-slate-500">Average Annual Fees</span>
                     <span className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(college.fees)}</span>
                   </div>
-                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                    <span className="text-xs font-semibold text-slate-500">Median Placement package</span>
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-850">
+                    <span className="text-xs font-semibold text-slate-500">Median package</span>
                     <span className="text-sm font-bold text-slate-900 dark:text-white">{college.placementMedian.toFixed(1)} LPA</span>
                   </div>
-                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-                    <span className="text-xs font-semibold text-slate-500">Highest Placement package</span>
+                  <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-850">
+                    <span className="text-xs font-semibold text-slate-500">Highest package</span>
                     <span className="text-sm font-bold text-slate-900 dark:text-white">{college.placementHighest.toFixed(1)} LPA</span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-xs font-semibold text-slate-500">Total Courses offered</span>
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">{college.courses.length}</span>
+                    <span className="text-xs font-semibold text-slate-500">Total Courses</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">{college.courses.length} Tracks</span>
                   </div>
                 </div>
               </div>
@@ -415,22 +413,23 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
           </div>
         )}
 
+        {/* COURSES & FEES TAB */}
         {activeTab === 'courses' && (
           <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
-            <h2 className="text-lg font-bold text-slate-950 dark:text-white mb-6">Offered Courses & Fee Structure</h2>
+            <h2 className="text-base font-extrabold text-slate-950 dark:text-white uppercase tracking-wider mb-6">Offered Courses & Fees</h2>
             
             {college.courses.length === 0 ? (
-              <p className="text-sm text-slate-500">No courses listed yet.</p>
+              <p className="text-xs text-slate-550">No courses listed yet.</p>
             ) : (
-              <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              <div className="divide-y divide-slate-100 dark:divide-slate-900">
                 {college.courses.map((course) => (
                   <div key={course.id} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row justify-between sm:items-start gap-4">
                     <div>
-                      <h3 className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                      <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                         <span>{course.name}</span>
                       </h3>
-                      <div className="mt-2 flex flex-wrap gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      <div className="mt-2 flex flex-wrap gap-4 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         <span>Duration: {course.duration}</span>
                         <span>•</span>
                         <span>Eligibility: {course.eligibility}</span>
@@ -438,7 +437,7 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                     <div className="text-left sm:text-right shrink-0">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Annual Fees</span>
-                      <span className="text-base font-bold text-indigo-600 dark:text-indigo-400">{formatCurrency(course.fees)}</span>
+                      <span className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">{formatCurrency(course.fees)}</span>
                     </div>
                   </div>
                 ))}
@@ -447,197 +446,170 @@ export default function CollegeDetailPage({ params }: { params: Promise<{ id: st
           </div>
         )}
 
-        {activeTab === 'placements' && (
-          <div className="space-y-8">
-            {/* Placement stats */}
-            <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
-              <h2 className="text-lg font-bold text-slate-950 dark:text-white mb-6">Placement Statistics</h2>
-              {college.placements.length === 0 ? (
-                <p className="text-sm text-slate-500">No placement history listed yet.</p>
-              ) : (
-                <div className="space-y-8">
-                  {college.placements.map((placement) => (
-                    <div key={placement.id} className="border-b last:border-0 border-slate-100 dark:border-slate-800 pb-6 last:pb-0">
-                      <h3 className="font-bold text-sm text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
-                        <Calendar className="h-4 w-4" />
-                        <span>Academic Year {placement.year} Batch</span>
-                      </h3>
-                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-900/50 flex items-center gap-4">
-                          <DollarSign className="h-8 w-8 text-emerald-500" />
-                          <div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Average Salary Package</span>
-                            <p className="text-lg font-extrabold text-slate-900 dark:text-white">{placement.averagePackage.toFixed(1)} LPA</p>
-                          </div>
-                        </div>
-                        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-900/50 flex items-center gap-4">
-                          <DollarSign className="h-8 w-8 text-indigo-500" />
-                          <div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Highest Salary Package</span>
-                            <p className="text-lg font-extrabold text-slate-900 dark:text-white">{placement.highestPackage.toFixed(1)} LPA</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {placement.topRecruiters && (
-                        <div className="mt-4">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Key Recruiters</span>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {placement.topRecruiters.split(',').map((rec, i) => (
-                              <span key={i} className="rounded-lg bg-indigo-50/50 border border-indigo-100 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/20 dark:border-indigo-900/40 dark:text-indigo-300">
-                                {rec.trim()}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+        {/* ADMISSION THROUGH TAB */}
+        {activeTab === 'admission' && (
+          <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
+            <h2 className="text-base font-extrabold text-slate-950 dark:text-white uppercase tracking-wider mb-6">Admission Criteria & Exams</h2>
+            
+            <div className="space-y-6">
+              <div className="flex gap-3">
+                <Compass className="h-6 w-6 text-indigo-600 shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Accepted Entrance Examinations</h3>
+                  <p className="mt-1 text-xs text-slate-550 leading-relaxed">
+                    This institute accepts scores from: <span className="font-bold text-indigo-600 dark:text-indigo-400">{getAcceptedExams()}</span>. Admission is strictly based on national counselling rounds (e.g. JoSAA for IITs/NITs, MCC for medical institutes, or CAT counseling for IIMs).
+                  </p>
                 </div>
-              )}
-            </div>
+              </div>
 
-            {/* Cutoffs matching table */}
-            <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
-              <h2 className="text-lg font-bold text-slate-950 dark:text-white mb-4">Historical Cutoff Closing Ranks</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                Historic seat closing ranks based on General category (All India/Home State quota).
-              </p>
-              
-              {college.cutoffs.length === 0 ? (
-                <p className="text-sm text-slate-500">No cutoff rankings listed yet.</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase tracking-wider text-slate-400">
-                        <th className="pb-3">Course / Branch</th>
-                        <th className="pb-3">Exam</th>
-                        <th className="pb-3">Category</th>
-                        <th className="pb-3">Quota</th>
-                        <th className="pb-3 text-right">Closing Cutoff Rank</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                      {college.cutoffs.map((cut) => (
-                        <tr key={cut.id} className="text-slate-700 dark:text-slate-300">
-                          <td className="py-3 font-semibold text-slate-900 dark:text-white">{cut.courseName}</td>
-                          <td className="py-3">{cut.exam}</td>
-                          <td className="py-3">{cut.category}</td>
-                          <td className="py-3">{cut.quota}</td>
-                          <td className="py-3 text-right font-extrabold text-indigo-600 dark:text-indigo-400">{cut.closingRank}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <div className="flex gap-3 border-t border-slate-100 pt-6 dark:border-slate-850">
+                <CheckCircle2 className="h-6 w-6 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">General Eligibility Criteria</h3>
+                  <ul className="mt-2 text-xs text-slate-550 leading-relaxed list-disc pl-4 space-y-1">
+                    <li>Candidates must qualify Class 12 (or equivalent graduation for MBA) with aggregate marks as per guidelines.</li>
+                    <li>For engineering programs, physics, chemistry, and mathematics (PCM) are mandatory subjects.</li>
+                    <li>For medical programs, physics, chemistry, biology (PCB), and English are mandatory.</li>
+                    <li>For management post-graduate studies, a recognized Bachelor degree in any discipline is required.</li>
+                  </ul>
                 </div>
-              )}
+              </div>
+
+              <div className="flex gap-3 border-t border-slate-100 pt-6 dark:border-slate-850">
+                <ShieldCheck className="h-6 w-6 text-indigo-500 shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Admission Process Workflow</h3>
+                  <p className="mt-1 text-xs text-slate-550 leading-relaxed">
+                    1. Fill out the corresponding exam registration form.<br />
+                    2. Secure the cutoff requirements in the exam.<br />
+                    3. Join the respective centralized counselling portal and choose this college during option entry.<br />
+                    4. Post seat allocation, report to campus with documents for physical verification.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {activeTab === 'reviews' && (
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {/* Reviews list */}
-            <div className="md:col-span-2 space-y-6">
-              <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
-                <h2 className="text-lg font-bold text-slate-950 dark:text-white mb-6">Student & Alumni Feedback</h2>
-                
-                {college.reviews.length === 0 ? (
-                  <p className="text-sm text-slate-500">No reviews yet. Be the first to add one!</p>
-                ) : (
-                  <div className="space-y-6 divide-y divide-slate-100 dark:divide-slate-800">
-                    {college.reviews.map((rev) => (
-                      <div key={rev.id} className="pt-6 first:pt-0">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-                              <User className="h-4 w-4" />
-                            </div>
-                            <span className="font-bold text-sm text-slate-900 dark:text-white">{rev.userName}</span>
-                          </div>
-                          
-                          <div className="flex items-center gap-1 text-xs font-bold text-amber-500">
-                            <Star className="h-4 w-4 fill-current" />
-                            <span>{rev.rating.toFixed(1)}</span>
-                          </div>
-                        </div>
-                        <p className="mt-3 text-sm text-slate-600 dark:text-slate-350 leading-relaxed pl-10">{rev.comment}</p>
-                      </div>
+        {/* CUTOFF RANKS TAB */}
+        {activeTab === 'cutoff' && (
+          <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
+            <h2 className="text-base font-extrabold text-slate-950 dark:text-white uppercase tracking-wider mb-4">Historical Cutoff Closing Ranks</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+              Cutoffs based on the General category (All India/Home State quota). For CAT, numbers correspond to percentile scores.
+            </p>
+            
+            {college.cutoffs.length === 0 ? (
+              <p className="text-xs text-slate-550">No cutoff rankings listed yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-450">
+                      <th className="pb-3">Course / Branch</th>
+                      <th className="pb-3">Exam</th>
+                      <th className="pb-3">Category</th>
+                      <th className="pb-3">Quota</th>
+                      <th className="pb-3 text-right">Closing Cutoff</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-900">
+                    {college.cutoffs.map((cut) => (
+                      <tr key={cut.id} className="text-slate-700 dark:text-slate-300">
+                        <td className="py-3 font-semibold text-slate-900 dark:text-white">{cut.courseName}</td>
+                        <td className="py-3">{cut.exam}</td>
+                        <td className="py-3">{cut.category}</td>
+                        <td className="py-3">{cut.quota}</td>
+                        <td className="py-3 text-right font-extrabold text-indigo-600 dark:text-indigo-400">
+                          {college.domain === 'Management' ? `${cut.closingRank}%ile` : cut.closingRank}
+                        </td>
+                      </tr>
                     ))}
-                  </div>
-                )}
+                  </tbody>
+                </table>
               </div>
-            </div>
+            )}
+          </div>
+        )}
 
-            {/* Write a Review box */}
-            <div>
-              <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
-                <h3 className="font-bold text-slate-950 dark:text-white flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-indigo-600" />
-                  <span>Write a Review</span>
-                </h3>
-                
-                <form onSubmit={handleReviewSubmit} className="mt-4 space-y-4">
-                  {reviewError && (
-                    <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-xs font-semibold text-rose-600 dark:bg-rose-950/20 dark:border-rose-900/40">
-                      {reviewError}
+        {/* PLACEMENTS TAB */}
+        {activeTab === 'placements' && (
+          <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
+            <h2 className="text-base font-extrabold text-slate-950 dark:text-white uppercase tracking-wider mb-6">Placement Statistics</h2>
+            {college.placements.length === 0 ? (
+              <p className="text-xs text-slate-550">No placement history listed yet.</p>
+            ) : (
+              <div className="space-y-6">
+                {college.placements.map((placement) => (
+                  <div key={placement.id} className="pb-6 last:pb-0 border-b last:border-0 border-slate-100 dark:border-slate-900">
+                    <h3 className="font-bold text-xs text-indigo-700 dark:text-indigo-455 flex items-center gap-1.5">
+                      <Calendar className="h-4 w-4" />
+                      <span>Academic Year {placement.year} Batch</span>
+                    </h3>
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-900/30 flex items-center gap-4 border border-slate-100 dark:border-slate-900">
+                        <DollarSign className="h-8 w-8 text-emerald-500" />
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Average Salary Package</span>
+                          <p className="text-base font-extrabold text-slate-900 dark:text-white">{placement.averagePackage.toFixed(1)} LPA</p>
+                        </div>
+                      </div>
+                      <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-900/30 flex items-center gap-4 border border-slate-100 dark:border-slate-900">
+                        <DollarSign className="h-8 w-8 text-indigo-500" />
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Highest Salary Package</span>
+                          <p className="text-base font-extrabold text-slate-900 dark:text-white">{placement.highestPackage.toFixed(1)} LPA</p>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  {reviewSuccess && (
-                    <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-xs font-semibold text-emerald-600 dark:bg-emerald-950/20 dark:border-emerald-900/40">
-                      Review submitted successfully!
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="text-xs font-bold text-slate-500">Your Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Priyan Bose"
-                      value={reviewName}
-                      onChange={(e) => setReviewName(e.target.value)}
-                      className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:border-indigo-600 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                    />
+                    
+                    {placement.topRecruiters && (
+                      <div className="mt-4">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Key Recruiters</span>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {placement.topRecruiters.split(',').map((rec, i) => (
+                            <span key={i} className="rounded-lg bg-indigo-50/50 border border-indigo-100 px-2.5 py-1 text-[10px] font-bold text-indigo-700 dark:bg-indigo-950/20 dark:border-indigo-900/40 dark:text-indigo-300">
+                              {rec.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-
-                  <div>
-                    <label className="text-xs font-bold text-slate-500">Rating (1 to 5 Stars)</label>
-                    <select
-                      value={reviewRating}
-                      onChange={(e) => setReviewRating(parseInt(e.target.value))}
-                      className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:border-indigo-600 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                    >
-                      <option value="5">5 Stars (Excellent)</option>
-                      <option value="4">4 Stars (Good)</option>
-                      <option value="3">3 Stars (Average)</option>
-                      <option value="2">2 Stars (Poor)</option>
-                      <option value="1">1 Star (Very Bad)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold text-slate-500">Comments</label>
-                    <textarea
-                      rows={4}
-                      placeholder="Share your experience regarding campus life, placements, or hostel reviews..."
-                      value={reviewComment}
-                      onChange={(e) => setReviewComment(e.target.value)}
-                      className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:border-indigo-600 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={submittingReview}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50 transition-colors"
-                  >
-                    <Send className="h-4 w-4" />
-                    <span>{submittingReview ? 'Submitting...' : 'Submit Review'}</span>
-                  </button>
-                </form>
+                ))}
               </div>
-            </div>
+            )}
+          </div>
+        )}
+
+        {/* SCHOLARSHIPS TAB */}
+        {activeTab === 'scholarships' && (
+          <div className="rounded-3xl border border-slate-200/50 bg-white p-6 shadow-sm dark:border-slate-800/50 dark:bg-slate-950">
+            <h2 className="text-base font-extrabold text-slate-950 dark:text-white uppercase tracking-wider mb-6">Financial Aid & Scholarships</h2>
+            
+            {college.scholarships.length === 0 ? (
+              <p className="text-xs text-slate-550">No scholarship programs listed for this college.</p>
+            ) : (
+              <div className="space-y-6">
+                {college.scholarships.map((sch) => (
+                  <div key={sch.id} className="pb-6 last:pb-0 border-b last:border-0 border-slate-100 dark:border-slate-900">
+                    <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                      <Award className="h-4.5 w-4.5 text-indigo-600 dark:text-indigo-400" />
+                      <span>{sch.name}</span>
+                    </h3>
+                    <p className="mt-2 text-xs text-slate-650 dark:text-slate-350 leading-relaxed">
+                      {sch.description}
+                    </p>
+                    {sch.amount && (
+                      <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Annual reward:</span>
+                        <span className="text-indigo-600 dark:text-indigo-400">{formatCurrency(sch.amount)}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

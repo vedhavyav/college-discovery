@@ -27,6 +27,15 @@ const iitsData = [
   { name: 'Indian Institute of Technology, Jammu (IIT Jammu)', city: 'Jammu', state: 'Jammu & Kashmir', established: 2016, ranking: 101, rating: 4.0, fees: 210000, placementMedian: 10.8, placementHighest: 48.0, cseCutoff: 5800, eeCutoff: 9900, meCutoff: 17000 }
 ];
 
+// Top NITs and IIITs
+const nitsIiitsData = [
+  { name: 'National Institute of Technology, Tiruchirappalli (NIT Trichy)', city: 'Tiruchirappalli', state: 'Tamil Nadu', established: 1964, ranking: 9, rating: 4.5, fees: 145000, placementMedian: 12.5, placementHighest: 52.0, cseCutoff: 1500, eeCutoff: 4500, meCutoff: 7500 },
+  { name: 'National Institute of Technology, Surathkal (NIT Surathkal)', city: 'Surathkal', state: 'Karnataka', established: 1960, ranking: 12, rating: 4.5, fees: 150000, placementMedian: 13.0, placementHighest: 54.0, cseCutoff: 1800, eeCutoff: 4800, meCutoff: 8000 },
+  { name: 'National Institute of Technology, Warangal (NIT Warangal)', city: 'Warangal', state: 'Telangana', established: 1959, ranking: 21, rating: 4.4, fees: 140000, placementMedian: 12.0, placementHighest: 50.0, cseCutoff: 2100, eeCutoff: 5200, meCutoff: 8500 },
+  { name: 'Indian Institute of Information Technology, Allahabad (IIIT Allahabad)', city: 'Allahabad', state: 'Uttar Pradesh', established: 1999, ranking: 89, rating: 4.5, fees: 180000, placementMedian: 22.0, placementHighest: 102.5, cseCutoff: 4800, eeCutoff: 8500, meCutoff: 0 },
+  { name: 'Indian Institute of Information Technology, Gwalior (IIIT Gwalior)', city: 'Gwalior', state: 'Madhya Pradesh', established: 1997, ranking: 98, rating: 4.3, fees: 175000, placementMedian: 16.5, placementHighest: 65.0, cseCutoff: 6500, eeCutoff: 11000, meCutoff: 0 }
+];
+
 // All 20 operating AIIMS
 const aiimsData = [
   { name: 'All India Institute of Medical Sciences, New Delhi (AIIMS)', city: 'New Delhi', state: 'Delhi', established: 1956, ranking: 1, rating: 4.9, fees: 1628, placementMedian: 18.0, placementHighest: 35.0, neetCutoff: 50 },
@@ -51,7 +60,18 @@ const aiimsData = [
   { name: 'All India Institute of Medical Sciences, Rae Bareli (AIIMS Rae Bareli)', city: 'Raebareli', state: 'Uttar Pradesh', established: 2013, ranking: 80, rating: 4.4, fees: 5856, placementMedian: 10.5, placementHighest: 17.0, neetCutoff: 2400 }
 ];
 
-// Unsplash cover photos rotation for engineering and medical
+// Top Management Colleges (IIMs, FMS, XLRI)
+const managementData = [
+  { name: 'Indian Institute of Management, Ahmedabad (IIM Ahmedabad)', city: 'Ahmedabad', state: 'Gujarat', established: 1961, ranking: 1, rating: 4.9, fees: 1250000, placementMedian: 31.5, placementHighest: 115.0, catCutoff: 99 },
+  { name: 'Indian Institute of Management, Bangalore (IIM Bangalore)', city: 'Bengaluru', state: 'Karnataka', established: 1973, ranking: 2, rating: 4.9, fees: 1225000, placementMedian: 30.0, placementHighest: 105.0, catCutoff: 99 },
+  { name: 'Indian Institute of Management, Calcutta (IIM Calcutta)', city: 'Kolkata', state: 'West Bengal', established: 1961, ranking: 3, rating: 4.8, fees: 1200000, placementMedian: 31.0, placementHighest: 110.0, catCutoff: 99 },
+  { name: 'Indian Institute of Management, Lucknow (IIM Lucknow)', city: 'Lucknow', state: 'Uttar Pradesh', established: 1984, ranking: 6, rating: 4.7, fees: 1075000, placementMedian: 28.0, placementHighest: 85.0, catCutoff: 98 },
+  { name: 'Indian Institute of Management, Kozhikode (IIM Kozhikode)', city: 'Kozhikode', state: 'Kerala', established: 1996, ranking: 5, rating: 4.7, fees: 1025000, placementMedian: 26.5, placementHighest: 72.8, catCutoff: 97 },
+  { name: 'Indian Institute of Management, Indore (IIM Indore)', city: 'Indore', state: 'Madhya Pradesh', established: 1996, ranking: 8, rating: 4.6, fees: 1050000, placementMedian: 25.8, placementHighest: 70.0, catCutoff: 97 },
+  { name: 'XLRI - Xavier School of Management (XLRI Jamshedpur)', city: 'Jamshedpur', state: 'Jharkhand', established: 1949, ranking: 9, rating: 4.7, fees: 1290000, placementMedian: 28.0, placementHighest: 78.2, catCutoff: 96 },
+  { name: 'Faculty of Management Studies, Delhi University (FMS Delhi)', city: 'New Delhi', state: 'Delhi', established: 1954, ranking: 35, rating: 4.8, fees: 100000, placementMedian: 30.0, placementHighest: 58.0, catCutoff: 98 }
+];
+
 const engineeringCovers = [
   'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&auto=format&fit=crop&q=80',
   'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=1200&auto=format&fit=crop&q=80',
@@ -68,6 +88,12 @@ const medicalCovers = [
   'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&auto=format&fit=crop&q=80'
 ];
 
+const managementCovers = [
+  'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1200&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&auto=format&fit=crop&q=80'
+];
+
 async function main() {
   console.log('Clearing database...');
   await prisma.discussionAnswer.deleteMany({});
@@ -76,7 +102,10 @@ async function main() {
   await prisma.cutoff.deleteMany({});
   await prisma.placement.deleteMany({});
   await prisma.course.deleteMany({});
+  await prisma.scholarship.deleteMany({});
   await prisma.college.deleteMany({});
+  await prisma.exam.deleteMany({});
+  await prisma.resource.deleteMany({});
 
   console.log('Seeding IITs...');
   for (let i = 0; i < iitsData.length; i++) {
@@ -95,6 +124,7 @@ async function main() {
         placementMedian: iit.placementMedian,
         placementHighest: iit.placementHighest,
         ranking: iit.ranking,
+        domain: 'Engineering',
         overview: `${iit.name} is a premier public technical and research university located in ${iit.city}, ${iit.state}. Established in ${iit.established}, it is recognized globally for its academic excellence, cutting-edge research, and strong placement records, attracting top ranks from JEE Advanced every year.`,
         courses: {
           create: [
@@ -118,8 +148,63 @@ async function main() {
           create: [
             { exam: 'JEE Advanced', category: 'General', quota: 'All India', courseName: 'Computer Science and Engineering', closingRank: iit.cseCutoff },
             { exam: 'JEE Advanced', category: 'General', quota: 'All India', courseName: 'Electrical Engineering', closingRank: iit.eeCutoff },
-            { exam: 'JEE Advanced', category: 'General', quota: 'All India', courseName: 'Mechanical Engineering', closingRank: iit.meCutoff },
-            { exam: 'JEE Advanced', category: 'OBC', quota: 'All India', courseName: 'Computer Science and Engineering', closingRank: Math.round(iit.cseCutoff * 0.7) }
+            { exam: 'JEE Advanced', category: 'General', quota: 'All India', courseName: 'Mechanical Engineering', closingRank: iit.meCutoff }
+          ]
+        },
+        scholarships: {
+          create: [
+            { name: 'Merit-cum-Means (MCM) Scholarship', amount: 50000, description: 'Tuition fee waiver and monthly allowance for students with parental income below Rs. 4.5 LPA.' },
+            { name: 'Institute Free Studentship', amount: 90000, description: '100% tuition fee exemption for SC/ST/PwD engineering students.' }
+          ]
+        }
+      }
+    });
+  }
+
+  console.log('Seeding NITs and IIITs...');
+  for (let i = 0; i < nitsIiitsData.length; i++) {
+    const nit = nitsIiitsData[i];
+    await prisma.college.create({
+      data: {
+        name: nit.name,
+        logoUrl: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&auto=format&fit=crop&q=60',
+        coverUrl: engineeringCovers[(i + 3) % engineeringCovers.length],
+        city: nit.city,
+        state: nit.state,
+        established: nit.established,
+        type: 'Government',
+        rating: nit.rating,
+        fees: nit.fees,
+        placementMedian: nit.placementMedian,
+        placementHighest: nit.placementHighest,
+        ranking: nit.ranking,
+        domain: 'Engineering',
+        overview: `${nit.name} is a top-tier public technical institution in ${nit.city}, ${nit.state}. Renowned for high academic standards and consistent performance in placements, it remains a prime choice for students qualifying through JEE Mains.`,
+        courses: {
+          create: [
+            { name: 'B.Tech Computer Science and Engineering', duration: '4 Years', fees: nit.fees + 5000, eligibility: 'Class 12 with 75% marks + JEE Main Rank' },
+            { name: 'B.Tech Electronics and Communication Engineering', duration: '4 Years', fees: nit.fees + 5000, eligibility: 'Class 12 with 75% marks + JEE Main Rank' }
+          ]
+        },
+        placements: {
+          create: [
+            { year: 2024, averagePackage: Math.round(nit.placementMedian * 1.12 * 10) / 10, highestPackage: nit.placementHighest, topRecruiters: 'Amazon, Microsoft, Qualcomm, Nvidia, Oracle, Samsung, Cisco' }
+          ]
+        },
+        reviews: {
+          create: [
+            { userName: 'Aditya Sen', rating: nit.rating, comment: 'Sprawling campus, excellent sports facilities, and strong coding environment.' }
+          ]
+        },
+        cutoffs: {
+          create: [
+            { exam: 'JEE Main', category: 'General', quota: 'All India', courseName: 'Computer Science and Engineering', closingRank: nit.cseCutoff },
+            { exam: 'JEE Main', category: 'General', quota: 'All India', courseName: 'Electronics and Communication Engineering', closingRank: nit.eeCutoff }
+          ]
+        },
+        scholarships: {
+          create: [
+            { name: 'OP Jindal Engineering Scholarship', amount: 80000, description: 'Awarded to top merit rank holders across disciplines based on academic criteria.' }
           ]
         }
       }
@@ -143,6 +228,7 @@ async function main() {
         placementMedian: med.placementMedian,
         placementHighest: med.placementHighest,
         ranking: med.ranking,
+        domain: 'Medical',
         overview: `${med.name} is a premier public medical institution and hospital located in ${med.city}, ${med.state}. Established in ${med.established}, it offers elite clinical exposure, heavily subsidized educational fees, and high-standard medical training under NEET counselling.`,
         courses: {
           create: [
@@ -156,64 +242,75 @@ async function main() {
         },
         reviews: {
           create: [
-            { userName: 'Dr. Vivek Roy', rating: med.rating, comment: `Unbeatable clinical experience. The patient flow at ${med.city} provides unmatched learning.` },
-            { userName: 'Dr. Shruti Sen', rating: med.rating - 0.1, comment: 'Extremely good research environment and peer group. Hostel facilities are top notch.' }
+            { userName: 'Dr. Vivek Roy', rating: med.rating, comment: `Unbeatable clinical experience. The patient flow at ${med.city} provides unmatched learning.` }
           ]
         },
         cutoffs: {
           create: [
-            { exam: 'NEET', category: 'General', quota: 'All India', courseName: 'MBBS', closingRank: med.neetCutoff },
-            { exam: 'NEET', category: 'OBC', quota: 'All India', courseName: 'MBBS', closingRank: Math.round(med.neetCutoff * 1.5) }
+            { exam: 'NEET', category: 'General', quota: 'All India', courseName: 'MBBS', closingRank: med.neetCutoff }
+          ]
+        },
+        scholarships: {
+          create: [
+            { name: 'Need-based Financial Exemption', amount: 1600, description: '100% waiver of tuition and hostel fees for candidates from low-income families.' }
           ]
         }
       }
     });
   }
 
-  console.log('Seeding other prominent colleges (NIT, BITS, DTU, VIT)...');
-  
-  // NIT Trichy
-  await prisma.college.create({
-    data: {
-      name: 'National Institute of Technology, Tiruchirappalli (NIT Trichy)',
-      logoUrl: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150&auto=format&fit=crop&q=60',
-      coverUrl: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&auto=format&fit=crop&q=80',
-      city: 'Tiruchirappalli',
-      state: 'Tamil Nadu',
-      established: 1964,
-      type: 'Government',
-      rating: 4.5,
-      fees: 145000,
-      placementMedian: 12.5,
-      placementHighest: 52.0,
-      ranking: 9,
-      overview: 'National Institute of Technology Tiruchirappalli is a public technical university of national importance. It is consistently ranked as the #1 NIT in India, renowned for its academic rigor, sprawling 800-acre campus, and exceptional placement statistics across all engineering departments.',
-      courses: {
-        create: [
-          { name: 'B.Tech Computer Science and Engineering', duration: '4 Years', fees: 150000, eligibility: 'Class 12 with 75% + JEE Main Rank' },
-          { name: 'B.Tech Electronics and Communication Engineering', duration: '4 Years', fees: 150000, eligibility: 'Class 12 with 75% + JEE Main Rank' }
-        ]
-      },
-      placements: {
-        create: [
-          { year: 2024, averagePackage: 15.6, highestPackage: 52.0, topRecruiters: 'Amazon, Microsoft, Nvidia, Qualcomm, Morgan Stanley, L&T' }
-        ]
-      },
-      reviews: {
-        create: [
-          { userName: 'Kartik Iyer', rating: 4.4, comment: 'Festember and Pragyan are two of the biggest festivals in South India. Campus life is amazing, though weather gets hot!' }
-        ]
-      },
-      cutoffs: {
-        create: [
-          { exam: 'JEE Main', category: 'General', quota: 'Other State', courseName: 'Computer Science and Engineering', closingRank: 1500 },
-          { exam: 'JEE Main', category: 'General', quota: 'Home State', courseName: 'Computer Science and Engineering', closingRank: 4500 },
-          { exam: 'JEE Main', category: 'OBC', quota: 'Other State', courseName: 'Computer Science and Engineering', closingRank: 600 }
-        ]
+  console.log('Seeding Management Colleges...');
+  for (let i = 0; i < managementData.length; i++) {
+    const mba = managementData[i];
+    await prisma.college.create({
+      data: {
+        name: mba.name,
+        logoUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=150&auto=format&fit=crop&q=60',
+        coverUrl: managementCovers[i % managementCovers.length],
+        city: mba.city,
+        state: mba.state,
+        established: mba.established,
+        type: mba.name.includes('XLRI') ? 'Private' : 'Government',
+        rating: mba.rating,
+        fees: mba.fees,
+        placementMedian: mba.placementMedian,
+        placementHighest: mba.placementHighest,
+        ranking: mba.ranking,
+        domain: 'Management',
+        overview: `${mba.name} is a premier post-graduate management school located in ${mba.city}, ${mba.state}. Founded in ${mba.established}, it represents the pinnacle of business leadership, research, and corporate consulting in India, admitting candidates through CAT/XAT.`,
+        courses: {
+          create: [
+            { name: 'MBA / Post Graduate Programme in Management (PGP)', duration: '2 Years', fees: mba.fees, eligibility: 'Graduate Degree with 50% marks + CAT Percentile Cutoff' },
+            { name: 'Executive MBA (PGPX)', duration: '1 Year', fees: mba.fees + 200000, eligibility: 'Graduation + 5 Years work experience + GMAT/GRE' }
+          ]
+        },
+        placements: {
+          create: [
+            { year: 2024, averagePackage: Math.round(mba.placementMedian * 1.1 * 10) / 10, highestPackage: mba.placementHighest, topRecruiters: 'McKinsey, BCG, Brain & Co, Goldman Sachs, JP Morgan, TAS, HUL, Microsoft' }
+          ]
+        },
+        reviews: {
+          create: [
+            { userName: 'Ananya Goel', rating: mba.rating, comment: 'World-class case-based learning. Peer group is exceptional, placements are legendary.' }
+          ]
+        },
+        cutoffs: {
+          create: [
+            { exam: 'CAT', category: 'General', quota: 'All India', courseName: 'MBA / Post Graduate Programme in Management (PGP)', closingRank: mba.catCutoff }
+          ]
+        },
+        scholarships: {
+          create: [
+            { name: 'Need-Based Financial Assistance (NBFA)', amount: 400000, description: 'Partial or full tuition fee waivers for MBA candidates based on family financial profiles.' },
+            { name: 'Aditya Birla Scholarship', amount: 175000, description: 'Merit scholarship awarded to top PGP students on entering selected top management institutes.' }
+          ]
+        }
       }
-    }
-  });
+    });
+  }
 
+  console.log('Seeding other prominent colleges (BITS, DTU, VIT)...');
+  
   // BITS Pilani
   await prisma.college.create({
     data: {
@@ -229,6 +326,7 @@ async function main() {
       placementMedian: 16.5,
       placementHighest: 60.7,
       ranking: 25,
+      domain: 'Engineering',
       overview: 'BITS Pilani is a private deemed university focused primarily on higher education and research in engineering and sciences. Operating on a unique "Zero Attendance Policy" and featuring a dual degree system, BITS Pilani commands a stellar reputation on par with the top IITs.',
       courses: {
         create: [
@@ -251,18 +349,23 @@ async function main() {
           { exam: 'BITSAT', category: 'General', quota: 'All India', courseName: 'Computer Science', closingRank: 320 },
           { exam: 'BITSAT', category: 'General', quota: 'All India', courseName: 'Electronics and Communication', closingRank: 285 }
         ]
+      },
+      scholarships: {
+        create: [
+          { name: 'BITS Merit-cum-Need (MCN) Scholarship', amount: 150000, description: 'Up to 80% tuition fee waiver for candidates with CGPA above 6.0 and family income criteria.' }
+        ]
       }
     }
   });
- 
-   // DTU
-   await prisma.college.create({
-     data: {
-       name: 'Delhi Technological University (DTU)',
-       logoUrl: 'https://images.unsplash.com/photo-1492538368677-f6e0afe31dcc?w=150&auto=format&fit=crop&q=60',
-       coverUrl: 'https://images.unsplash.com/photo-1492538368677-f6e0afe31dcc?w=1200&auto=format&fit=crop&q=80',
-       city: 'New Delhi',
-       state: 'Delhi',
+
+  // DTU
+  await prisma.college.create({
+    data: {
+      name: 'Delhi Technological University (DTU)',
+      logoUrl: 'https://images.unsplash.com/photo-1492538368677-f6e0afe31dcc?w=150&auto=format&fit=crop&q=60',
+      coverUrl: 'https://images.unsplash.com/photo-1492538368677-f6e0afe31dcc?w=1200&auto=format&fit=crop&q=80',
+      city: 'New Delhi',
+      state: 'Delhi',
       established: 1941,
       type: 'Government',
       rating: 4.4,
@@ -270,6 +373,7 @@ async function main() {
       placementMedian: 13.0,
       placementHighest: 82.5,
       ranking: 29,
+      domain: 'Engineering',
       overview: 'Delhi Technological University (formerly Delhi College of Engineering - DCE) is a premier state government university in Delhi. It is historic and highly regarded for engineering, with high placement packages and a massive campus in Rohini, Delhi.',
       courses: {
         create: [
@@ -292,6 +396,11 @@ async function main() {
           { exam: 'JEE Main', category: 'General', quota: 'Home State', courseName: 'Computer Science and Engineering', closingRank: 12000 },
           { exam: 'JEE Main', category: 'General', quota: 'Other State', courseName: 'Computer Science and Engineering', closingRank: 6000 }
         ]
+      },
+      scholarships: {
+        create: [
+          { name: 'Delhi State Post Matric Scholarship', amount: 50000, description: 'Tuition fees reimbursement for students belonging to minority backgrounds under state rules.' }
+        ]
       }
     }
   });
@@ -311,6 +420,7 @@ async function main() {
       placementMedian: 9.0,
       placementHighest: 102.0,
       ranking: 11,
+      domain: 'Engineering',
       overview: 'Vellore Institute of Technology (VIT) is a top private research deemed university in Vellore, Tamil Nadu. Known for its massive student intake, excellent infrastructure, and strong placement cell, it offers various engineering programs with flexible credit systems.',
       courses: {
         create: [
@@ -331,11 +441,96 @@ async function main() {
         create: [
           { exam: 'VITEEE', category: 'General', quota: 'All India', courseName: 'Computer Science and Engineering', closingRank: 2000 }
         ]
+      },
+      scholarships: {
+        create: [
+          { name: 'VIT Ignited Minds Scholarship', amount: 100000, description: '100% tuition waiver for central/state board rank holders and top VITEEE scorers.' }
+        ]
       }
     }
   });
 
-  console.log('Seeding discussion board...');
+  console.log('Seeding Exams table...');
+  const exams = [
+    {
+      name: 'JEE Main',
+      description: 'Joint Entrance Examination Main (JEE Main) is the premier national-level test for admissions to undergraduate engineering courses in NITs, IIITs, DTU, and other state-sponsored institutions.',
+      registrationDate: 'November 2026 - January 2027',
+      examDate: 'January 2027 (Session 1), April 2027 (Session 2)',
+      eligibility: 'Class 12 qualification with Physics, Chemistry, and Mathematics (PCM). Minimum 75% marks required for NIT/IIIT admissions.',
+      syllabus: 'Physics, Chemistry, and Mathematics (based on Class 11 and 12 NCERT curriculum).'
+    },
+    {
+      name: 'JEE Advanced',
+      description: 'Joint Entrance Examination Advanced is the entrance test for admissions to undergraduate engineering courses at all 23 IITs. Candidates must qualify JEE Main and rank in the top 2.5 Lakhs.',
+      registrationDate: 'April 2027',
+      examDate: 'May 2027',
+      eligibility: 'Top 2,50,000 qualifiers of JEE Main, holding PCM in Class 12 and passing with required marks.',
+      syllabus: 'Advanced-level Physics, Chemistry, and Mathematics concepts.'
+    },
+    {
+      name: 'NEET',
+      description: 'National Eligibility cum Entrance Test (NEET) is the single entrance examination for admission to MBBS, BDS, and other medical courses across government and private medical schools, including AIIMS.',
+      registrationDate: 'February 2027 - March 2027',
+      examDate: 'May 2027',
+      eligibility: 'Class 12 with Physics, Chemistry, Biology/Biotechnology (PCB) and English. Minimum 50% aggregate marks for General category.',
+      syllabus: 'Physics, Chemistry, and Biology (Zoology & Botany) topics based on Class 11 & 12 NCERT.'
+    },
+    {
+      name: 'CAT',
+      description: 'Common Admission Test (CAT) is a computer-based management aptitude test conducted annually for admission to MBA, PGDM, and other post-graduate management programs in all 21 IIMs and other top institutions.',
+      registrationDate: 'August 2026 - September 2026',
+      examDate: 'November 2026',
+      eligibility: 'Graduation degree in any stream with a minimum of 50% marks (45% for SC/ST/PwD). Final-year candidates can also apply.',
+      syllabus: 'Quantitative Aptitude, Data Interpretation & Logical Reasoning (DILR), and Verbal Ability & Reading Comprehension (VARC).'
+    },
+    {
+      name: 'BITSAT',
+      description: 'BITS Admission Test (BITSAT) is a university-level computer-based online test conducted by BITS Pilani for admissions to integrated first-degree engineering programs across its 3 campuses.',
+      registrationDate: 'January 2027 - April 2027',
+      examDate: 'May 2027 (Session 1), June 2027 (Session 2)',
+      eligibility: 'Class 12 with Physics, Chemistry, Mathematics (PCM) and English, obtaining at least 75% in PCM aggregate with 60% in each subject.',
+      syllabus: 'Physics, Chemistry, Mathematics, English Proficiency, and Logical Reasoning.'
+    }
+  ];
+
+  for (const exam of exams) {
+    await prisma.exam.create({ data: exam });
+  }
+
+  console.log('Seeding Resources table...');
+  const resources = [
+    {
+      title: 'A Comprehensive Study Guide to Crack JEE Advanced Physics',
+      category: 'Preparation Guide',
+      description: 'Master mechanics, electrodynamics, and modern physics with curated books recommendations, daily mock schedules, and dynamic formula sheets.',
+      link: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=100'
+    },
+    {
+      title: 'NEET 2027 Biology: Key Revision Chapters and Cheat-sheets',
+      category: 'Revision Material',
+      description: 'A summary checklist covering human physiology, genetics, ecology, and plant kingdoms, focusing on high-weightage topics from NCERT.',
+      link: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=100'
+    },
+    {
+      title: 'CAT DILR Mock Test Booklet & Answer Explanations',
+      category: 'Practice Tests',
+      description: 'Includes 10 sectional tests on data interpretation and logical reasoning (puzzles, grid arrangements, matrix sets) with stepwise solutions.',
+      link: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=100'
+    },
+    {
+      title: 'Guide to Scholarships and Financial Aid in Top Indian Universities',
+      category: 'Financial Guide',
+      description: 'Walks through state and central portals (NSP, INSPIRE, MCM) to check eligibility criteria and check checklist items for document submissions.',
+      link: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=100'
+    }
+  ];
+
+  for (const res of resources) {
+    await prisma.resource.create({ data: res });
+  }
+
+  console.log('Seeding discussions board...');
 
   const q1 = await prisma.discussionQuestion.create({
     data: {

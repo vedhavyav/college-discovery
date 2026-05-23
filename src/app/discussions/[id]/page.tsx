@@ -3,6 +3,8 @@
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { MessageSquare, ArrowLeft, Send, User, Calendar, AlertCircle, MessageCircle } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import AuthWall from '@/components/AuthWall';
 
 interface DiscussionAnswer {
   id: string;
@@ -25,6 +27,7 @@ interface PageProps {
 }
 
 export default function DiscussionDetailPage({ params }: PageProps) {
+  const { user, loading: authLoading } = useAuth();
   const resolvedParams = use(params);
   const questionId = resolvedParams.id;
 
@@ -58,6 +61,12 @@ export default function DiscussionDetailPage({ params }: PageProps) {
   useEffect(() => {
     fetchQuestionDetails();
   }, [questionId]);
+
+  useEffect(() => {
+    if (user) {
+      setName(user.displayName || user.email?.split('@')[0] || '');
+    }
+  }, [user]);
 
   const handlePostAnswer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,6 +117,31 @@ export default function DiscussionDetailPage({ params }: PageProps) {
       minute: '2-digit',
     });
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-24">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center justify-center gap-2">
+            <MessageSquare className="h-7 w-7 text-indigo-600" />
+            <span>Discussion Board</span>
+          </h1>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Sign in to view discussion replies.
+          </p>
+        </div>
+        <AuthWall />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
